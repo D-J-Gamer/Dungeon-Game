@@ -1,8 +1,9 @@
 #include "Prop.h"
 
-Prop::Prop(Texture2D* tex, Vector2 pos): worldPos(pos){
+Prop::Prop(Texture2D* tex, Vector2 pos, float base): worldPos(pos){
     for (int i = 0; i < maxFrames; i++) texture[i] = tex[i];
     worldPos = pos;
+    baseFooting = base;
 }
 
 void Prop::Render(Vector2 playerPos){
@@ -21,5 +22,5 @@ void Prop::updateAnimation(float deltaTime){
 }
 
 Rectangle Prop::GetCollisionRec(){
-    return Rectangle{screenPos.x, screenPos.y, texture[frame].width * scale, texture[frame].height * scale};
+    return Rectangle{screenPos.x, screenPos.y + texture[frame].height * scale * (1.0f - baseFooting), texture[frame].width * scale, texture[frame].height * scale * baseFooting};
 }

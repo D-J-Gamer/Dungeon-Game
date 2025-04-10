@@ -4,7 +4,7 @@ BaseCharacter::BaseCharacter(){
 }
 
 Rectangle BaseCharacter::getCollisionRec(){
-    return Rectangle{screenPos.x + 80, screenPos.y + 144, 112, 144 - 96};
+    return Rectangle{screenPos.x + 80 + 10, screenPos.y + 144, 112 - 20, 144 - 96};
 };
 
 Rectangle BaseCharacter::getCharacterRec(){

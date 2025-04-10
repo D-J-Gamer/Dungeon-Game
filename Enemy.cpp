@@ -2,7 +2,8 @@
 #include "Raylib\raylib\src\raylib.h"
 #include "Textures.h"
 #include "Raylib\raylib\src\raymath.h"
-#include "Walls.h"
+#include "src\Pathfinder.h"
+
 
 Enemy::Enemy(Vector2 pos, Textures texture_s, float life_s, float damage_s)
 {
@@ -25,20 +26,42 @@ Enemy::Enemy(Vector2 pos, Textures texture_s, float life_s, float damage_s)
 
 Vector2 Enemy::toTarget(){
     return Vector2{-target->getWorldPos().x - worldPos.x + target->getScreenPos().x, 
-                    -target->getWorldPos().y - worldPos.y + target->getScreenPos().y};
+                    -target->getWorldPos().y - worldPos.y + target->getScreenPos().y};                    
 };
 
 bool Enemy::getCanSeeTarget(){
     if (target->getAlive() == false) return false;
-    Vector2 theTargetDirection = Vector2Normalize(toTarget());
-    for (Vector2 i = {target->getWorldPos().x, target->getWorldPos().y}; i.x < worldPos.x || i.y < worldPos.y ;i = {i.x + theTargetDirection.x, i.y + theTargetDirection.y}){
-        // for (int k = 0; k < wallCount; k++){
-        //     if (CheckCollisionRecs(walls[k].rec, Rectangle {i.x, i.y, 1, 1})){
-        //         return false;
-        //     }
-        // }
+    bool boolValue = true;
+    Vector2 line[2] = {Vector2{getCollisionRec().x, getCollisionRec().y}, Vector2{target->getCollisionRec().x, target->getCollisionRec().y}};
+    DrawLineEx(line[0], line[1], 2.0f, BLUE);
+    // Check if the line intersects with any of the walls
+    for (int i = 0; i < 12; i++){
+        DrawLine(wallsRec[i].x, wallsRec[i].y, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y, RED);
+        DrawLine(wallsRec[i].x, wallsRec[i].y, wallsRec[i].x, wallsRec[i].y + wallsRec[i].height, RED);
+        DrawLine(wallsRec[i].x + wallsRec[i].width, wallsRec[i].y, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height, RED);
+        DrawLine(wallsRec[i].x, wallsRec[i].y + wallsRec[i].height, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height, RED);
+        if (CheckCollisionLines(line[0], line[1], Vector2 {wallsRec[i].x, wallsRec[i].y}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y}, NULL)
+            || CheckCollisionLines(line[0], line[1], Vector2 {wallsRec[i].x, wallsRec[i].y}, Vector2 {wallsRec[i].x, wallsRec[i].y + wallsRec[i].height}, NULL)
+            || CheckCollisionLines(line[0], line[1], Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height}, NULL)
+            || CheckCollisionLines(line[0], line[1], Vector2 {wallsRec[i].x, wallsRec[i].y + wallsRec[i].height}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height}, NULL)){
+            // return false;
+            boolValue = false;
+        }
     }
-    return true;
+    // return true;
+    return boolValue;
+
+    // Vector2 theTargetDirection = Vector2Normalize(toTarget());
+    // Vector2 distanceToCheck = Vector2{abs(target->getWorldPos().x - worldPos.x), abs(target->getWorldPos().y - worldPos.y)};
+    // for (Vector2 i = {-target->getWorldPos().x, -target->getWorldPos().y}; distanceToCheck.x < 0.0f || distanceToCheck.y < 0.0f ;distanceToCheck = {distanceToCheck.x - abs(theTargetDirection.x), distanceToCheck.y - abs(theTargetDirection.y)}){
+    //     for (int k = 0; k < wallCount; k++){
+    //         if (CheckCollisionRecs(wallsRec[k], Rectangle {i.x, i.y, 1, 1})){
+    //             return false;
+    //         }
+    //     }
+    //     i = {i.x + theTargetDirection.x, i.y + theTargetDirection.y};
+    // }
+    // return false;
 }
 
 void Enemy::tick(float deltaTime){
@@ -52,7 +75,7 @@ void Enemy::tick(float deltaTime){
     // // Normalize the vector
     // to_Target = Vector2Normalize(to_Target);
     // multiply by speed
-    if ((to_Target.x * to_Target.x + to_Target.y * to_Target.y) > (6.0f * 128.0f) * (6.0f * 128.0f) || attacking || !getAlive() /*|| !getCanSeeTarget()*/){
+    if ((to_Target.x * to_Target.x + to_Target.y * to_Target.y) > (6.0f * 128.0f) * (6.0f * 128.0f) || attacking || !getAlive() || !getCanSeeTarget()){
         to_Target.x = no_speed;
         to_Target.y = no_speed;
     }

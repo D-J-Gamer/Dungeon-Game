@@ -7,7 +7,14 @@
 #include "Walls.h"
 #include <string>
 
+
+
 main(){
+
+    // Rectangle getWall(float width, float height){
+    //     return Rectangle{0.0, 0.0, width * 128, height * 128};
+    // };
+
     int window_dimensions[2] = {768, 768};
     InitWindow(window_dimensions[0], window_dimensions[1], "Dungeon Game");
 
@@ -78,6 +85,7 @@ main(){
         Prop(candel_1_textures, Vector2{128.0f * 8, 128.0f * 3 - 32.0f}, 0.2f)
     };
 
+    // Enemies commented out for now
     // Enemies
     const int enemy_count = 2;
     Enemy enemies[enemy_count]{
@@ -88,9 +96,10 @@ main(){
     // Player
     Character player(window_dimensions[0], window_dimensions[1], player_textures, 9.0f, 1.0f);
 
+    // Enemies commented out for now
     for (int i = 0; i < enemy_count; i++){
         enemies[i].setTarget(&player);
-        // enemies[i].setWall(walls, wallCount);
+        // enemies[i].setWall(&walls->rec, wallCount);
     }
 
     // Strings
@@ -129,7 +138,21 @@ main(){
             }
         }
 
+        // // drawwall lines
+        // for (int j = 0; j < wallCount; j++){
+        //     DrawLineEx(Vector2{walls[j].rec.x, walls[j].rec.y}, Vector2{walls[j].rec.x + walls[j].rec.width, walls[j].rec.y}, 2.0f, BLUE);
+        //     DrawLineEx(Vector2{walls[j].rec.x, walls[j].rec.y}, Vector2{walls[j].rec.x, walls[j].rec.y + walls[j].rec.height}, 2.0f, BLUE);
+        //     DrawLineEx(Vector2{walls[j].rec.x + walls[j].rec.width, walls[j].rec.y}, Vector2{walls[j].rec.x + walls[j].rec.width, walls[j].rec.y + walls[j].rec.height}, 2.0f, BLUE);
+        //     DrawLineEx(Vector2{walls[j].rec.x, walls[j].rec.y + walls[j].rec.height}, Vector2{walls[j].rec.x + walls[j].rec.width, walls[j].rec.y + walls[j].rec.height}, 2.0f, BLUE);
+        // }
+
+        // enemies commented out for now
         for (int i = 0; i < enemy_count; i++){
+            Rectangle wallRecs[wallCount];
+            for (int j = 0; j < wallCount; j++){
+                wallRecs[j] = walls[j].rec;
+            }
+            enemies[i].setWall(wallRecs, wallCount);
             enemies[i].tick(GetFrameTime());
             if (CheckCollisionRecs(player.getCollisionRec(), enemies[i].getCollisionRec())){
                 // player.undoMovement();
@@ -166,12 +189,6 @@ main(){
         
             // DrawRectangleRec(enemies[i].getCollisionRec(), RED);
         }
-        // Rectangle rec = player.getCollisionRec();
-        // DrawRectangleRec(player.getAttackRec(), RED);
-        // DrawRectangleRec(player.getCollisionRec(), RED);
-        // DrawRectangleRec(Rectangle{rec.x - 80, rec.y - 104, 112 + 112, 144}, GREEN);
-        // DrawRectangleRec(Rectangle{rec.x + 80 - 112, rec.y - 104, 112 + 112, 144}, BLUE);
-        // Rectangle{screenPos.x + 80, screenPos.y + 144, 112, 144 - 96}
 
         for (int i = 0; i < prop_count; i++){
             // Draws Props

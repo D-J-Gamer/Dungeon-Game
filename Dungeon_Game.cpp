@@ -6,6 +6,7 @@
 #include "Textures.h"
 #include "Walls.h"
 #include <string>
+// #include "src\Pathfinder.h"
 
 
 
@@ -17,6 +18,16 @@ main(){
 
     int window_dimensions[2] = {768, 768};
     InitWindow(window_dimensions[0], window_dimensions[1], "Dungeon Game");
+    // SetTargetFPS(60);
+    // while( !WindowShouldClose()){
+    //     BeginDrawing();
+    //     ClearBackground(WHITE);
+    //     DrawText("Loading...", window_dimensions[0]/2 - MeasureText("Loading...", 20)/2, window_dimensions[1]/2 - 20, 20, BLACK);
+    //     DrawRectangle(GetMouseX(), GetMouseY(), 20, 20, BLUE);
+    //     EndDrawing();
+    // }
+    // CloseWindow();
+    // InitWindow(window_dimensions[0], window_dimensions[1], "Dungeon Game");
 
     // Dungeon Map
     Texture2D dungeon_map = LoadTexture("Dungeon_Tileset\\Dungeon_Map.png");
@@ -93,8 +104,14 @@ main(){
         Enemy(Vector2{128.0f * 8, 128.0f * 5}, enemy_skeleton2_textures, 3.0f, 3.0f)
     };
 
+    Rectangle wallRecs_p[wallCount];
+    for (int j = 0; j < wallCount; j++){
+        wallRecs_p[j] = walls[j].rec;
+    }
+
     // Player
-    Character player(window_dimensions[0], window_dimensions[1], player_textures, 9.0f, 1.0f);
+    Character player(window_dimensions[0], window_dimensions[1], player_textures, 9.0f, 1.0f, wallCount, wallRecs_p);
+    // player.pathfinder.createGrid(player.getCollisionRec(), player.getWorldPos());
 
     // Enemies commented out for now
     for (int i = 0; i < enemy_count; i++){
@@ -238,4 +255,5 @@ main(){
     }
 
     CloseWindow();
+    player.~Character();
 }

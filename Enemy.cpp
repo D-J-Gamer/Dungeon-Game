@@ -2,7 +2,7 @@
 #include "Raylib\raylib\src\raylib.h"
 #include "Textures.h"
 #include "Raylib\raylib\src\raymath.h"
-#include "src\Pathfinder.h"
+// #include "src\Pathfinder.h"
 
 
 Enemy::Enemy(Vector2 pos, Textures texture_s, float life_s, float damage_s)

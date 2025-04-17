@@ -7,17 +7,21 @@
 class Pathfinder{
     public:
         Pathfinder(int newScale, int newWallCount, int newWidth, int newHeight, Rectangle walls[], int newTileSize);
-        // ~Pathfinder(/* args */);
-        Vector2 nextStepPathfind(float xPos, float yPos, float xTarget, float yTarget);
+        ~Pathfinder(/* args */);
+        Vector2 nextStepPathfind(Rectangle collisionRec, Vector2 worldPos);
         int createGrid(Rectangle collisionRec, Vector2 worldPos);
+        void drawGrid();
+        int getGvalue(int x, int y){return gGrid[y * width + x];}
+        int getHeight(){return height;}
+        int getWidth(){return width;}
     private:
         int scale{};
         int wallCount{};
-        int wallGrid[48*48]{};//Magic 24 * 24 for now
-        float gGrid[48*48]{}; //Magic 24 * 24 for now
+        int* wallGrid{};//Magic 24 * 24 for now
+        float* gGrid{}; //Magic 24 * 24 for now
         int width{};
         int height{};
-        Rectangle wallsRec[100]{}; //Magic 100 for now
+        Rectangle* wallsRec{}; //Magic 100 for now
         int tileSize{};
     };
 

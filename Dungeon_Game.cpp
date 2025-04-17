@@ -6,7 +6,7 @@
 #include "Textures.h"
 #include "Walls.h"
 #include <string>
-// #include "src\Pathfinder.h"
+#include "Pathfinder.h"
 
 
 
@@ -98,10 +98,11 @@ main(){
 
     // Enemies commented out for now
     // Enemies
-    const int enemy_count = 2;
+    const int enemy_count = 3;
     Enemy enemies[enemy_count]{
         Enemy(Vector2{128.0f * 4, 128.0f * 4}, enemy_skeleton2_textures, 3.0f, 3.0f),
-        Enemy(Vector2{128.0f * 8, 128.0f * 5}, enemy_skeleton2_textures, 3.0f, 3.0f)
+        Enemy(Vector2{128.0f * 8, 128.0f * 5}, enemy_skeleton2_textures, 3.0f, 3.0f),
+        Enemy(Vector2{128.0f * 10, 128.0f * 12}, enemy_skeleton2_textures, 3.0f, 3.0f)
     };
 
     Rectangle wallRecs_p[wallCount];
@@ -112,6 +113,13 @@ main(){
     // Player
     Character player(window_dimensions[0], window_dimensions[1], player_textures, 9.0f, 1.0f, wallCount, wallRecs_p);
     // player.pathfinder.createGrid(player.getCollisionRec(), player.getWorldPos());
+    for (int i = 0; i < wallCount; i++){
+        wallRecs_p[i].x = player.getWorldPos().x + 128 * walls[i].xMultiplier + walls[i].xOffset;
+        wallRecs_p[i].y = player.getWorldPos().y + 128 * walls[i].yMultiplier + walls[i].yOffset;
+    }
+    Pathfinder pathfinder(4, wallCount, 32, 24, wallRecs_p, 128);
+    pathfinder.createGrid(player.getCollisionRec(), player.getWorldPos());
+    player.setPath(&pathfinder);
 
     // Enemies commented out for now
     for (int i = 0; i < enemy_count; i++){
@@ -134,7 +142,7 @@ main(){
 
 
         // Draw Map
-        DrawTextureEx(dungeon_background, Vector2 {0.0, 0.0}, 0.0, 1.0, WHITE);
+        DrawTextureEx(dungeon_background, Vector2 {0.0, 0.0}, 0.0, 4.0, WHITE);
         DrawTextureEx(dungeon_map, mapPos, 0.0, 4.0, WHITE);
 
         
@@ -250,7 +258,16 @@ main(){
         // DrawText(player_level.append(std::to_string(player.getLevel())).c_str(), 10, 40, 20, RED);
         // DrawText(player_experience.append(std::to_string(player.getExperience())).c_str(), 10, 70, 20, RED);
         
-
+        // pathfinder.drawGrid();
+        //display gvalue text over the tiles.
+        // for (int i = 0; i < pathfinder.getHeight(); i++){
+        //     for (int j = 0; j < pathfinder.getWidth(); j++){
+        //         DrawText(std::to_string(pathfinder.getGvalue(j, i)).c_str(), j * 128 / 2 + mapPos.x, i * 128 / 2 + mapPos.y, 10, BLUE);
+        //     }
+        // }
+        // for (int i = 0; i < enemy_count; i++){
+        //     enemies[i].toTarget();
+        // }
         EndDrawing();
     }
 

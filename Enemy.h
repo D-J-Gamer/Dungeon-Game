@@ -15,7 +15,8 @@ public:
         wallCount = wallcount;
     }
     Vector2 toTarget();
-    bool getCanSeeTarget();
+    Vector2 distanceToTarget();
+    bool getCanSeeTarget(float deltaTime);
     void attackPlayer(){attacking = true;}
     bool getDealtdamage(){return dealtdamage;}
     void setDealtdamage(bool dealt){dealtdamage = dealt;}
@@ -34,4 +35,5 @@ private:
     int frameDamageDealt{};
     Rectangle wallsRec[15]{};
     int wallCount{};
+    float lastSeenTargetTime = 3.0f;
 };

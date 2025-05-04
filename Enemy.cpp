@@ -2,8 +2,6 @@
 #include "Raylib\raylib\src\raylib.h"
 #include "Textures.h"
 #include "Raylib\raylib\src\raymath.h"
-// #include "src\Pathfinder.h"
-
 
 Enemy::Enemy(Vector2 pos, Textures texture_s, float life_s, float damage_s)
 {
@@ -23,6 +21,28 @@ Enemy::Enemy(Vector2 pos, Textures texture_s, float life_s, float damage_s)
     damage = damage_s;
     for (int i = 0; i < 2; i++) attackFrames_w_damage[i] = texture_s.attackFrames_w_damage[i];
     lastSeenTargetTime = 3.0f;
+    // 50%
+    // 25%
+    // 10%
+    // 5%
+    // 1%
+    int randomValues[5] = {GetRandomValue(1,2), GetRandomValue(1, 4),
+                            GetRandomValue(1, 10), GetRandomValue(1, 20),
+                            GetRandomValue(1, 100)};
+    
+    // Temporary code
+    randomValues[0] = 1;
+    randomValues[1] = 2;
+
+    for (int i = 1; i < 6; i++){
+        if (i == randomValues[i - 1]){
+            addItem(createRandomItem());
+            // index++;
+        }
+        else break;
+    }
+    goldCount = GetRandomValue(1, 100) - index * 10;
+    if (goldCount < 0) goldCount = 0;
 };
 
 Vector2 Enemy::distanceToTarget(){
@@ -31,8 +51,6 @@ Vector2 Enemy::distanceToTarget(){
 }
 
 Vector2 Enemy::toTarget(){
-    // return Vector2{-target->getWorldPos().x - worldPos.x + target->getScreenPos().x, 
-    //                 -target->getWorldPos().y - worldPos.y + target->getScreenPos().y};
     return Vector2{target->pathToTarget(getCollisionRec(), target->getWorldPos()).x, target->pathToTarget(getCollisionRec(), target->getWorldPos()).y};
 };
 
@@ -50,27 +68,23 @@ bool Enemy::getCanSeeTarget(float deltaTime){
                             Vector2{target->getCharacterRec().x, target->getCharacterRec().y + target->getCharacterRec().height},
                             Vector2{target->getCharacterRec().x + target->getCharacterRec().width, target->getCharacterRec().y + target->getCharacterRec().height}};
 
+    // See vision lines
     // for (int i = 0; i < 5; i++){
     //     for (int j = 0; j < 5; j++){
     //         DrawLineEx(lineStart[j], lineEnd[i], 2.0f, BLUE);
     //     }
     // }
-    // DrawLineEx(lineStart, lineEnd[0], 2.0f, BLUE);
+
     // Check if the line intersects with any of the walls
     lastSeenTargetTime += deltaTime;
     for (int i = 0; i < 12; i++){
         int visionValue = 0;
-        // DrawLine(wallsRec[i].x, wallsRec[i].y, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y, RED);
-        // DrawLine(wallsRec[i].x, wallsRec[i].y, wallsRec[i].x, wallsRec[i].y + wallsRec[i].height, RED);
-        // DrawLine(wallsRec[i].x + wallsRec[i].width, wallsRec[i].y, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height, RED);
-        // DrawLine(wallsRec[i].x, wallsRec[i].y + wallsRec[i].height, wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height, RED);
         for (int j = 0; j < 5; j++){
             for (int k = 0; k < 5; k++){
                 if ((CheckCollisionLines(lineStart[k], lineEnd[j], Vector2 {wallsRec[i].x, wallsRec[i].y}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y}, NULL)
                     || CheckCollisionLines(lineStart[k], lineEnd[j], Vector2 {wallsRec[i].x, wallsRec[i].y}, Vector2 {wallsRec[i].x, wallsRec[i].y + wallsRec[i].height}, NULL)
                     || CheckCollisionLines(lineStart[k], lineEnd[j], Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height}, NULL)
                     || CheckCollisionLines(lineStart[k], lineEnd[j], Vector2 {wallsRec[i].x, wallsRec[i].y + wallsRec[i].height}, Vector2 {wallsRec[i].x + wallsRec[i].width, wallsRec[i].y + wallsRec[i].height}, NULL))){
-                    // return false;
                     visionValue++;
                     if (visionValue == 25){
                         if (lastSeenTargetTime > 1.5f){
@@ -78,63 +92,63 @@ bool Enemy::getCanSeeTarget(float deltaTime){
                             return boolValue;
                         }
                     }
-                    // boolValue = false;
-                    // return boolValue;
                 }
             }
         }
     }
-    // return true;
     lastSeenTargetTime = 0.0f;
     return boolValue;
-
-    // Vector2 theTargetDirection = Vector2Normalize(toTarget());
-    // Vector2 distanceToCheck = Vector2{abs(target->getWorldPos().x - worldPos.x), abs(target->getWorldPos().y - worldPos.y)};
-    // for (Vector2 i = {-target->getWorldPos().x, -target->getWorldPos().y}; distanceToCheck.x < 0.0f || distanceToCheck.y < 0.0f ;distanceToCheck = {distanceToCheck.x - abs(theTargetDirection.x), distanceToCheck.y - abs(theTargetDirection.y)}){
-    //     for (int k = 0; k < wallCount; k++){
-    //         if (CheckCollisionRecs(wallsRec[k], Rectangle {i.x, i.y, 1, 1})){
-    //             return false;
-    //         }
-    //     }
-    //     i = {i.x + theTargetDirection.x, i.y + theTargetDirection.y};
-    // }
-    // return false;
 }
 
 void Enemy::tick(float deltaTime){
-    // if (!getAlive()) return;
     worldPosLastFrame = worldPos;
 
     int no_speed = 0;
 
-    // get toTarget
-    Vector2 to_Target = distanceToTarget();
-    // // Normalize the vector
-    // to_Target = Vector2Normalize(to_Target);
-    // multiply by speed
-    if ((to_Target.x * to_Target.x + to_Target.y * to_Target.y) > (6.0f * 128.0f) * (6.0f * 128.0f) || attacking || !getAlive() || !getCanSeeTarget(deltaTime)){
-        to_Target.x = no_speed;
-        to_Target.y = no_speed;
+    if (getAlive() == false){
+        //
     }
-    else{
-        to_Target = target->pathToTarget(getCollisionRec(), target->getWorldPos());
-        // Normalize the vector
-        to_Target = Vector2Normalize(to_Target);
+    else {
+        // get toTarget
+        Vector2 to_Target = distanceToTarget();
+        if ((to_Target.x * to_Target.x + to_Target.y * to_Target.y) < (1.0f * 128.0f) * (1.0f * 128.0f)){
+            attacking = true;
+        }
         // multiply by speed
-        to_Target.x *= speed;
-        to_Target.y *= speed;
-    };
-    // Move the enemy (change worldPos)
-    worldPos.x += to_Target.x;
-    worldPos.y += to_Target.y;
-    if (to_Target.x > 0) rightleft = 1.f;
-    else if (to_Target.x < 0) rightleft = -1.f;
-    if (to_Target.x != 0 || to_Target.y != 0) moving = true;
-    else moving = false;
-    if (worldPosLastFrame != worldPos) moving = true;
-    else moving = false;
+        if ((to_Target.x * to_Target.x + to_Target.y * to_Target.y) > (6.0f * 128.0f) * (6.0f * 128.0f) || attacking || !getAlive() || !getCanSeeTarget(deltaTime)){
+            to_Target.x = no_speed;
+            to_Target.y = no_speed;
+        }
+        else{
+            to_Target = target->pathToTarget(getCollisionRec(), target->getWorldPos());
+            // Normalize the vector
+            to_Target = Vector2Normalize(to_Target);
+            // multiply by speed
+            to_Target.x *= speed;
+            to_Target.y *= speed;
+        };
+        // Move the enemy (change worldPos)
+        worldPos.x += to_Target.x;
+        worldPos.y += to_Target.y;
+        if (to_Target.x > 0) rightleft = 1.f;
+        else if (to_Target.x < 0) rightleft = -1.f;
+        if (to_Target.x != 0 || to_Target.y != 0) moving = true;
+        else moving = false;
+        if (worldPosLastFrame != worldPos) moving = true;
+        else moving = false;
+    }
     screenPos.x = worldPos.x + target->getWorldPos().x;
     screenPos.y = worldPos.y + target->getWorldPos().y;
+
+    if (CheckCollisionRecs(getCollisionRec(), target->getCollisionRec()) && !getAlive() && index > 0){
+        color = BLUE;
+        if(IsKeyPressed(KEY_E)){
+            openInventory = true;
+        }
+    }
+    else if (!getAlive()){
+        color = WHITE;
+    }
 
     BaseCharacter::tick(deltaTime);
 };

@@ -9,11 +9,11 @@ struct point{
 };
 
 // Pathfinder
-Pathfinder::Pathfinder(int newScale, int newWallCount, int newWidth, int newHeight, Rectangle walls[], int newTileSize){
+Pathfinder::Pathfinder(int newScale, int newWallCount, int newWidth, int newHeight, Rectangle walls[], int newTileSize, int windowScaleX, int windowScaleY) {
     scale = newScale;
     wallCount = newWallCount;
-    width = newWidth * scale;
-    height = newHeight * scale;
+    width = newWidth * scale * windowScaleX;
+    height = newHeight * scale * windowScaleY;
     tileSize = newTileSize;
     wallsRec = new Rectangle[wallCount]{};
     for (int i = 0; i < wallCount; i++){
@@ -31,14 +31,9 @@ Pathfinder::Pathfinder(int newScale, int newWallCount, int newWidth, int newHeig
         }
     }
 
-    // std::cout << "Wall Count: " << wallCount << std::endl;
-    // for (int i = 0; i < wallCount; i++){
-    //     std::cout << "Wall " << i << ": " << wallsRec[i].x << ", " << wallsRec[i].y << ", " << wallsRec[i].width << ", " << wallsRec[i].height << std::endl;
-    // }
-
     for (int i = 0; i < wallCount; i++) {
-        for (int j = static_cast<int>(wallsRec[i].y) * scale; j < static_cast<int>(wallsRec[i].y + wallsRec[i].height) * scale; j++) {
-            for (int k = static_cast<int>(wallsRec[i].x) * scale; k < static_cast<int>(wallsRec[i].x + wallsRec[i].width) * scale; k++) {
+        for (int j = static_cast<int>(wallsRec[i].y) * scale - 6; j < static_cast<int>(wallsRec[i].y + wallsRec[i].height) * scale - 6; j++) {
+            for (int k = static_cast<int>(wallsRec[i].x) * scale - 5; k < static_cast<int>(wallsRec[i].x + wallsRec[i].width) * scale - 5; k++) {
                 if (j >= 0 && j < height && k >= 0 && k < width) {
                     wallGrid[j * width + k] = 1; // Mark as a wall
                 }
@@ -46,11 +41,10 @@ Pathfinder::Pathfinder(int newScale, int newWallCount, int newWidth, int newHeig
         }
     }
     gGrid = new float[height * width]{};
-    // createGrid(Rectangle{0.0f, 0.0f, 0.0f, 0.0f}, Vector2{0.0f, 0.0f});
 };
 Pathfinder::~Pathfinder() {
     if (wallGrid != nullptr) {
-        delete[] wallGrid;
+        // delete[] wallGrid;
         wallGrid = nullptr;
     }
     if (gGrid != nullptr) {
@@ -71,7 +65,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
     int h = static_cast<int>(collisionRec.height * scale / tileSize);
     if (h < 1) h = 1;
 
-    // DrawRectangle(x * 5, y * 5, w * 5, h * 5, BLACK);
     point nodes[height * width]{};
     point nextStep = point{0, 0};
     int nodeCount = 0;
@@ -104,8 +97,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
         if (wallGrid[(nodes[i].y - 1) * width + nodes[i].x] == 1){
             canGoUP = false;
         }
-        // std::cout << "up: " << gGrid[(nodes[i].y - 1) * width + nodes[i].x] << ", ";
-        // std::cout << "currentDistance: " << currentDistance << std::endl;
     }
     // left
     for (int i = 0; i < h; i++){
@@ -118,8 +109,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
         if (wallGrid[nodes[i * width].y * width + nodes[i * width].x - 1] == 1){
             canGoLEFT = false;
         }
-        // std::cout << "left: " << gGrid[nodes[i * width].y * width + nodes[i * width].x - 1] << ", ";
-        // std::cout << "currentDistance: " << currentDistance << std::endl;
     }
     // right
     for (int i = 0; i < h; i++){
@@ -132,8 +121,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
         if (wallGrid[nodes[(i * w) + w - 1].y * width + nodes[(i * w) + w - 1].x + 1] == 1){
             canGoRIGHT = false;
         }
-        // std::cout << "right: " << gGrid[nodes[i * w + w - 1].y * width + nodes[i * w + w - 1].x + 1] << ", ";
-        // std::cout << "currentDistance: " << currentDistance << std::endl;
     }
     // down
     for (int i = 0; i < w; i++){
@@ -146,8 +133,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
         if (wallGrid[(nodes[i + (h - 1) * w].y + 1) * width + nodes[i + (h - 1) * w].x] == 1){
             canGoDOWN = false;
         }
-        // std::cout << "down: " << gGrid[(nodes[i + (h - 1) * w].y + 1) * width + nodes[i + (h - 1) * w].x] << ", ";
-        // std::cout << "currentDistance: " << currentDistance << std::endl;
     }
     // up right
     if (wallGrid[(nodes[w - 1].y - 1) * width + nodes[w - 1].x + 1] != 1){
@@ -156,8 +141,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
             nextStep = point{1, -1};
         }
     }
-    // std::cout << "up right: " << gGrid[(nodes[w - 1].y - 1) * width + nodes[w - 1].x + 1] << ", ";
-    // std::cout << "currentDistance: " << currentDistance << std::endl;
     // down left
     if (wallGrid[(nodes[h * w - w].y + 1) * width + nodes[h * w - w].x - 1] != 1){
         if (gGrid[(nodes[h * w - w].y + 1) * width + nodes[h * w - w].x - 1] < currentDistance){
@@ -165,26 +148,21 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
             nextStep = point{-1, 1};
         }
     }
-    // std::cout << "down left: " << gGrid[(nodes[h * w - w].y + 1) * width + nodes[h * w - w].x - 1] << ", ";
-    // std::cout << "currentDistance: " << currentDistance << std::endl;
-    // // down right
+    // down right
     if (wallGrid[(nodes[h * w - 1].y + 1) * width + nodes[h * w - 1].x + 1] != 1){
         if (gGrid[(nodes[h * w - 1].y + 1) * width + nodes[h * w - 1].x + 1] < currentDistance){
             currentDistance = gGrid[(nodes[h * w - 1].y + 1) * width + nodes[h*w - 1].x + 1];
             nextStep = point{1, 1};
         }
     }
-    // std::cout << "down right: " << gGrid[(nodes[h * w - 1].y + 1) * width + nodes[h * w - 1].x + 1] << ", ";
-    // std::cout << "currentDistance: " << currentDistance << std::endl;
-    // // up left
+    // up left
     if (wallGrid[(nodes[0].y - 1) * width + nodes[0].x - 1] != 1){
         if (gGrid[(nodes[0].y - 1) * width + nodes[0].x - 1] < currentDistance){
             currentDistance = gGrid[(nodes[0].y - 1) * width + nodes[0].x - 1];
             nextStep = point{-1, -1};
         }
     }
-    // // std::cout << "up left: " << gGrid[(nodes[0].y - 1) * width + nodes[0].x - 1] << ", ";
-    // // std::cout << "currentDistance: " << currentDistance << std::endl;
+
     if (nextStep.x !=0){
         if (canGoLEFT == false && nextStep.x == -1) nextStep.x = 0;
         if (canGoRIGHT == false && nextStep.x == 1) nextStep.x = 0;
@@ -196,8 +174,6 @@ Vector2 Pathfinder::nextStepPathfind(Rectangle collisionRec, Vector2 worldPos){
     return Vector2{static_cast<float>(nextStep.x), static_cast<float>(nextStep.y)};
 };
 
-// int grid[map_height][map_width]{};
-
 int Pathfinder::createGrid(Rectangle collisionRec, Vector2 worldPos){
     bool finished = false;
     for (int i = 0; i < height; i++) {
@@ -207,8 +183,12 @@ int Pathfinder::createGrid(Rectangle collisionRec, Vector2 worldPos){
             else gGrid[i * width + j] = 999;
         }
     }
-    int x = static_cast<int>((collisionRec.x + worldPos.x) * scale / tileSize);
-    int y = static_cast<int>((collisionRec.y + worldPos.y) * scale / tileSize);
+    point buffer = point{0, 0};
+    if (IsKeyDown(KEY_A)) buffer.x = static_cast<int>(scale / 2.0f);
+    int x = static_cast<int>((collisionRec.x + worldPos.x) * scale / tileSize - scale / 2.0f) + buffer.x;
+
+    if (IsKeyDown(KEY_W)) buffer.y = static_cast<int>(scale / 2.0f);
+    int y = static_cast<int>((collisionRec.y + worldPos.y) * scale / tileSize) + buffer.y;
     int w = static_cast<int>(collisionRec.width * scale / tileSize);
     if (w < 1) w = 1;
     int h = static_cast<int>(collisionRec.height * scale / tileSize);
@@ -325,7 +305,7 @@ int Pathfinder::createGrid(Rectangle collisionRec, Vector2 worldPos){
                     }
                 }
             }
-            if (perimeterCount == 0 || timesChecked == 10 * scale * scale * scale) finished = true;
+            if (perimeterCount == 0 || timesChecked == 15 * scale * scale * scale) finished = true;
             else{
                 for (int k = 0; k < perimeterCount; k++){
                     nodes[k] = newNodes[k];

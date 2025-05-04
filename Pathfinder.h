@@ -6,7 +6,7 @@
 
 class Pathfinder{
     public:
-        Pathfinder(int newScale, int newWallCount, int newWidth, int newHeight, Rectangle walls[], int newTileSize);
+        Pathfinder(int newScale, int newWallCount, int newWidth, int newHeight, Rectangle walls[], int newTileSize, int windowScaleX, int windowScaleY);
         ~Pathfinder(/* args */);
         Vector2 nextStepPathfind(Rectangle collisionRec, Vector2 worldPos);
         int createGrid(Rectangle collisionRec, Vector2 worldPos);
@@ -24,11 +24,5 @@ class Pathfinder{
         Rectangle* wallsRec{}; //Magic 100 for now
         int tileSize{};
     };
-
-// Pathfinder::Pathfinder(/* args */)
-// {
-// }
-
-
 
 #endif

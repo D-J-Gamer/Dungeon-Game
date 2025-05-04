@@ -59,6 +59,7 @@ protected:
     float scale = 8.0f;
     bool controlled{};
     bool isdeadlastframe = false;
+    Color color = WHITE;
 private:
     bool alive = true;
 };

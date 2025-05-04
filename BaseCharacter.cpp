@@ -92,5 +92,5 @@ void BaseCharacter::tick(float deltaTime){
     }
     Rectangle source = {frame * dimensions[0], 0.0f, dimensions[0] * rightleft, dimensions[1]};
     Rectangle dest = {screenPos.x + 16, screenPos.y - 48, scale * dimensions[0], scale * dimensions[1]};
-    DrawTexturePro(texture, source, dest, (Vector2){0.0, 0.0}, 0.0f, WHITE);
+    DrawTexturePro(texture, source, dest, (Vector2){0.0, 0.0}, 0.0f, color);
 };

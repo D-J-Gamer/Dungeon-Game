@@ -10,8 +10,6 @@ struct Wall{
     float yOffset; // Y offset
 };
 
-Rectangle getWall(float width, float height){
-    return Rectangle{0.0, 0.0, width * 128, height * 128};
-};
+Rectangle getWall(float width, float height);
 
 #endif

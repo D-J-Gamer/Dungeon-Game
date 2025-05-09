@@ -59,8 +59,8 @@ void Inventory::IsItemSelected(){
                     }
                 }
             }
-            if (!iDEquip[items[heldItemIndex].equippedSlot] && isHeldItemInSubInventory && CheckCollisionPointRec(mousePos, Rectangle{iDEquipPos[enemy->getItem(heldItemIndex).equippedSlot].x, iDEquipPos[enemy->getItem(heldItemIndex).equippedSlot].y, enemy->getItem(heldItemIndex).texture.width * scale * 6 , enemy->getItem(heldItemIndex).texture.height * scale * 6})){
-                addSpecificItem(enemy->getItem(heldItemIndex), 0, 0);
+            if (isHeldItemInSubInventory && !iDEquip[enemy->getItem(heldItemIndex).equippedSlot] && CheckCollisionPointRec(mousePos, Rectangle{iDEquipPos[enemy->getItem(heldItemIndex).equippedSlot].x, iDEquipPos[enemy->getItem(heldItemIndex).equippedSlot].y, enemy->getItem(heldItemIndex).texture.width * scale * 6 , enemy->getItem(heldItemIndex).texture.height * scale * 6})){
+                addSpecificItem(enemy->getItem(heldItemIndex), 6, 5);
                 isItemHeld = false;
                 iDEquip[items[heldItemIndex].equippedSlot] = true;
                 isHeldItemInSubInventory = false;

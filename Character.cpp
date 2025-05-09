@@ -30,7 +30,7 @@ void Character::tick(float deltaTime){
     Vector2 direction = {0.0, 0.0};
     worldPosLastFrame = worldPos;
 
-    if (IsKeyDown(KEY_SPACE) && !attacking){
+    if (IsKeyDown(KEY_SPACE) && !attacking && getAlive()){
         attacking = true;
         frame = 0;
     }

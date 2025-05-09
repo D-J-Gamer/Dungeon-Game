@@ -14,6 +14,10 @@ class Inventory{
         void OpenInventory(){
             inventoryOpen = true;
         }
+        void CloseInventory(){
+            inventoryOpen = false;
+            subInventoryOpen = false;
+        }
         void OpenSubInventory(){
             subInventoryOpen = true;
         }
